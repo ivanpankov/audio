@@ -1,0 +1,43 @@
+.audio-track {
+    border: 1px solid gray;
+    margin: 8px 4px;
+    padding: 4px;
+
+    .content {
+        font-family: "Lucida Console", "Courier New", monospace;
+        font-size: 13px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-right: 8px;
+        width: 50px;
+    }
+
+    .media-control {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+        padding: 0;
+        background: none;
+        border: none;
+        margin: 0;
+        display: block;
+        box-sizing: border-box;
+    }
+
+    .media-control:hover {
+        background-color: lightgray;
+    }
+
+    .middle>label {
+        margin-bottom: 4px;
+        display: block;
+        font-weight: bold;
+    }
+}
