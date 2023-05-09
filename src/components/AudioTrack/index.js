@@ -1,46 +1,80 @@
+import { useEffect, useRef, useState } from "react";
 import AudioProgress from "../AudioProgress";
 import { BsPlayFill, BsPauseFill, BsFillStopFill } from "react-icons/bs";
 import "./styles.scss";
-import { useRef, useState } from "react";
+
+const noop = () => { };
+const audioElDefault = {
+    play: noop,
+    pause: noop,
+    currentTime: 0,
+    duration: 0
+};
 
 export default function AudioTrack({ fileName = "", filePath = "", controls = [] }) {
     const [isPlaying, setPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const audioRef = useRef(null);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
     const disabled = !Boolean(filePath);
+    const audioRef = useRef(audioElDefault);
+    const audioEl = audioRef.current;
 
-    console.log(progress);
+    const play = () => {
+        setPlaying(true);
+        audioRef.current.currentTime = currentTime;
+        audioRef.current.play();
+    };
+
+    const pause = () => {
+        setPlaying(false);
+        audioRef.current.pause();
+    };
+
+    const stop = () => {
+        pause();
+        audioRef.current.currentTime = 0;
+    };
 
     const handlePlay = () => {
         if (isPlaying) {
-            setPlaying(false);
-            audioRef.current.pause();
+            pause();
         } else {
-            setPlaying(true);
-            audioRef.current.play();
+            play();
         }
     };
 
-    const handleStop = () => {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        setPlaying(false);
-    }
-
     const handleTimeUpdate = (event) => {
         const { target } = event;
-        setProgress((target.currentTime / target.duration) || 0);
+        const { currentTime } = target;
+        setCurrentTime(currentTime);
+    };
+
+    const handleTimeChange = (value) => {
+        if (isPlaying) {
+            pause();
+        }
+        setCurrentTime(value);
+    };
+
+    const handleMetadata = () => {
+        setDuration(audioEl.duration);
     };
 
     return (
         <div className="audio-track">
-            <audio ref={audioRef} src={filePath} onTimeUpdate={handleTimeUpdate}></audio>
+            <audio
+                preload="metadata"
+                onLoadedMetadata={handleMetadata}
+                ref={audioRef}
+                src={filePath}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={stop}></audio>
             <div className="content">
                 <div className="controls">
                     <button className="media-control" onClick={handlePlay} disabled={disabled}>
                         {isPlaying ? <BsPauseFill /> : <BsPlayFill />}
                     </button>
-                    <button className="media-control" onClick={handleStop} disabled={disabled}>
+                    <button className="media-control" onClick={stop} disabled={disabled}>
                         <BsFillStopFill />
                     </button>
                     {controls}
@@ -52,7 +86,12 @@ export default function AudioTrack({ fileName = "", filePath = "", controls = []
 
                 <div className="right"></div>
             </div>
-            <AudioProgress progress={progress} disabled={disabled} />
+            <AudioProgress
+                currentTime={currentTime}
+                duration={duration}
+                disabled={disabled}
+                onChange={handleTimeChange}
+            />
         </div>
     );
 };
