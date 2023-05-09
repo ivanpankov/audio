@@ -1,6 +1,6 @@
 import "./styles.scss";
 
-export default function AudioProgress({ progress, onChange }) {
+export default function AudioProgress({ progress, onChange, disabled }) {
     const handleChange = (event) => {
         console.log(event)
     };
@@ -15,6 +15,7 @@ export default function AudioProgress({ progress, onChange }) {
                 step={0.01}
                 className="slider"
                 onChange={handleChange}
+                disabled={disabled}
             />
         </div>
     );

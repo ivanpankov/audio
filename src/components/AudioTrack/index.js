@@ -7,6 +7,9 @@ export default function AudioTrack({ fileName = "", filePath = "", controls = []
     const [isPlaying, setPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const audioRef = useRef(null);
+    const disabled = !Boolean(filePath);
+
+    console.log(progress);
 
     const handlePlay = () => {
         if (isPlaying) {
@@ -26,7 +29,7 @@ export default function AudioTrack({ fileName = "", filePath = "", controls = []
 
     const handleTimeUpdate = (event) => {
         const { target } = event;
-        setProgress(target.currentTime / target.duration);
+        setProgress((target.currentTime / target.duration) || 0);
     };
 
     return (
@@ -34,10 +37,10 @@ export default function AudioTrack({ fileName = "", filePath = "", controls = []
             <audio ref={audioRef} src={filePath} onTimeUpdate={handleTimeUpdate}></audio>
             <div className="content">
                 <div className="controls">
-                    <button className="media-control" onClick={handlePlay}>
+                    <button className="media-control" onClick={handlePlay} disabled={disabled}>
                         {isPlaying ? <BsPauseFill /> : <BsPlayFill />}
                     </button>
-                    <button className="media-control" onClick={handleStop}>
+                    <button className="media-control" onClick={handleStop} disabled={disabled}>
                         <BsFillStopFill />
                     </button>
                     {controls}
@@ -49,7 +52,7 @@ export default function AudioTrack({ fileName = "", filePath = "", controls = []
 
                 <div className="right"></div>
             </div>
-            <AudioProgress progress={progress} />
+            <AudioProgress progress={progress} disabled={disabled} />
         </div>
     );
 };
